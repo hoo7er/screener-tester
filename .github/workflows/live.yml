@@ -1,0 +1,58 @@
+name: live
+# Every 15 minutes during US market hours: logs what each tester would do on the newest bars.
+on:
+  schedule:
+    - cron: "2,17,32,47 13-21 * * 1-5"      # UTC. Covers 9:30-16:00 ET in both winter and summer time.
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run even if the market is closed (for testing)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tester
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Is the market open?
+        id: gate
+        run: |
+          H=$(TZ=America/New_York date +%H%M); D=$(TZ=America/New_York date +%u)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || { [ "$D" -le 5 ] && [ "$H" -ge 0945 ] && [ "$H" -le 1610 ]; }; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"; echo "outside market hours ($D $H), skipping"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.run == 'true'
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.run == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        if: steps.gate.outputs.run == 'true'
+        run: pip install -r requirements.txt
+      - name: Run live step
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FORCE_LIVE: ${{ inputs.force && '1' || '' }}
+        run: python -m tester.collect live
+      - name: Commit data
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          git config user.name "tester-bot"
+          git config user.email "tester-bot@users.noreply.github.com"
+          git add -A data reports
+          if ! git diff --cached --quiet; then
+            git commit -m "live $(date -u +%Y-%m-%d_%H:%M)"
+            for i in 1 2 3 4; do git pull --rebase -q && git push -q && break || sleep 6; done
+          fi
