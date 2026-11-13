@@ -1,12 +1,12 @@
 # Strategy tester
 
-Runs your screener's strategy on real Yahoo Finance data, automatically, all through market hours, and keeps score.
+Runs your screener's strategy on real Yahoo Finance data for testing, automatically, all through market hours, and keeps score.
 
 - **live** (every 15 min, market hours): logs which testers would enter on the newest closed 15m bars -> `data/live/`
 - **settle** (after the close): stores the day's bars, simulates every tester's exits, rewrites `reports/summary.md`
 - **seed** (once): downloads ~58 days of 15m bars and replays them through every tester so you have a baseline on day one
 
-The indicators are the same ports you use in the Colab screener (Beardy Squeeze Pro + HMA-Kahlman, closed bars only, regular hours).
+The indicators are the same ports you use in the Colab screener (REDACTED INFO CUZ).
 It measures **the stock's move in your direction, in daily-ATR units**. Option P&L comes later.
 
 ## The testers (edit `tester/variants.py`)
