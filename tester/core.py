@@ -15,7 +15,7 @@ FIRE_WINDOW = 4          # a squeeze that fired within this many bars counts as 
 MIN_TIGHT_BARS = 4       # a fire only counts if orange/red showed this many bars before it
 MIN_SCORE = 5            # of 6, needed to call a side a "setup"
 WARMUP_BARS = 60
-MAX_DAYS = 40            # trading days of bars used for indicators (same in live and settle)
+MAX_DAYS = 60            # trading days of bars used for indicators (same in live and settle)
 CUR_W = np.array([40, 25, 10, 15, 10], float)   # opp weights: checks, timing, momentum, extension, movement
 
 
@@ -213,7 +213,7 @@ def build_panel(bars, now=None):
     if not frames:
         return pd.DataFrame()
     panel = pd.concat(frames, ignore_index=True)
-    panel = panel[panel["atr"].notna()].copy()
+    panel = panel[panel["atr"].notna() & panel["sma20"].notna()].copy()
     rank = pd.Series(ctx).rank(pct=True)
     return score_panel(panel, rank)
 
