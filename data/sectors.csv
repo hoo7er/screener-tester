@@ -1,0 +1,50 @@
+ticker,sector
+ABBV,Healthcare
+ACN,Technology
+ADBE,Technology
+AMZN,Consumer Cyclical
+ANET,Technology
+APH,Technology
+ARM,Technology
+BA,Industrials
+BE,Industrials
+BKNG,Consumer Cyclical
+C,Financial Services
+COHR,Technology
+COIN,Financial Services
+CRM,Technology
+CRWD,Technology
+CRWV,Technology
+CSCO,Technology
+GILD,Healthcare
+GLW,Technology
+GOOG,Communication Services
+HOOD,Financial Services
+HPE,Technology
+IBM,Technology
+INTC,Technology
+KLAC,Technology
+LRCX,Technology
+MCD,Consumer Cyclical
+MRK,Healthcare
+MRNA,Healthcare
+MRVL,Technology
+MS,Financial Services
+MSTR,Technology
+NBIS,Communication Services
+NFLX,Communication Services
+NKE,Consumer Cyclical
+NOW,Technology
+NVDA,Technology
+NXPI,Technology
+ORCL,Technology
+PLTR,Technology
+QCOM,Technology
+RKLB,Industrials
+SHOP,Technology
+SMCI,Technology
+SPCX,Industrials
+TJX,Consumer Cyclical
+UBER,Technology
+VRT,Industrials
+XOM,Energy
