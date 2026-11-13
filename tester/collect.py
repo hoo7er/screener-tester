@@ -106,6 +106,25 @@ def merged_bars(tickers, period=FRESH_PERIOD):
     return bars
 
 
+def sectors(tickers):
+    """data/sectors.csv (ticker, sector): fetched once per ticker from Yahoo and kept in the repo."""
+    f = DATA / "sectors.csv"
+    known = dict(pd.read_csv(f).values) if f.exists() else {}
+    todo = [t for t in tickers if known.get(t, "Unknown") in ("", "Unknown") or not isinstance(known.get(t), str)]
+    for t in todo:
+        try:
+            s = yf.Ticker(t).info.get("sector") or "Unknown"
+        except Exception:
+            s = "Unknown"
+        known[t] = s
+        time.sleep(0.3)
+    if todo:
+        DATA.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(sorted(known.items()), columns=["ticker", "sector"]).to_csv(f, index=False)
+        print("sectors updated:", len(todo), "looked up,", sum(known.get(t) == "Unknown" for t in todo), "unknown")
+    return known
+
+
 def meta():
     f = DATA / "meta.json"
     return json.loads(f.read_text()) if f.exists() else {}
@@ -176,6 +195,7 @@ def settle(bars=None, save=True):
     if "forward_start" not in m:
         m["forward_start"] = str(now.date())
         save_meta(m)
+    panel["sector"] = panel.ticker.map(sectors(sorted(bars)))
     TRADES.mkdir(parents=True, exist_ok=True)
     after_close = (now.hour * 60 + now.minute) >= (16 * 60 + 10)
     quality = []
@@ -185,7 +205,17 @@ def settle(bars=None, save=True):
             continue
         f = TRADES / f"{d:%Y-%m-%d}.csv"
         sub = panel[panel.date == day]
-        if f.exists() or sub.ticker.nunique() < 5:
+        if sub.ticker.nunique() < 5:
+            continue
+        if f.exists():
+            # testers added after this day was settled are filled in afterwards and labelled "replay"
+            old = pd.read_csv(f) if f.stat().st_size > 0 else pd.DataFrame(columns=["variant"])
+            missing = [v["name"] for v in VARIANTS if v["name"] not in set(old["variant"])]
+            if missing:
+                add = engine.run_day(sub, d.date(), "replay", only=missing)
+                if len(add):
+                    pd.concat([old, add], ignore_index=True).to_csv(f, index=False)
+                    print(f"{d:%Y-%m-%d} backfilled {len(add)} trades for {sorted(add.variant.unique())}")
             continue
         kind = "forward" if str(d.date()) >= m["forward_start"] else "replay"
         tr = engine.run_day(sub, d.date(), kind)

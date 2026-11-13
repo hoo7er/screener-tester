@@ -5,7 +5,8 @@ from types import SimpleNamespace
 import numpy as np
 import pandas as pd
 
-from .variants import (GAP_SKIP_ATR, HOLD_BARS, MAX_PER_DAY, SL_ATR, TP_ATR, TRAIL_ATR, VARIANTS)
+from .variants import (GAP_SKIP_ATR, HOLD_BARS, MAX_PER_DAY, MAX_PER_SECTOR, SL_ATR, TOP_N, TP_ATR, TRAIL_ATR,
+                       VARIANTS)
 
 PATH_BARS = 16      # records the move at +1 ... +16 bars after entry (shows where the edge peaks)
 
@@ -17,8 +18,9 @@ def _mask(df, v):
 
 def live_flags(df):
     """For the latest bars: which variants would consider each row (no next bar needed)."""
-    names = np.array([v["name"] for v in VARIANTS])
-    hits = np.column_stack([_mask(df, v) for v in VARIANTS])
+    vs = [v for v in VARIANTS if not v.get("select")]     # snapshot-style testers are not flagged bar by bar
+    names = np.array([v["name"] for v in vs])
+    hits = np.column_stack([_mask(df, v) for v in vs])
     return [",".join(names[r]) for r in hits]
 
 
@@ -26,7 +28,29 @@ def _directions(df, v):
     return np.asarray(v["dirfn"](df)) if v["dirfn"] else df["dir"].values
 
 
+def _pick_dashboard(df, v):
+    """The screener dashboard's top-N: setups first, then checklist score, then opp, max 2 per sector."""
+    m = _mask(df, v) & df.entry.notna().values
+    if not m.any():
+        return df.iloc[0:0].assign(side=[])
+    c = df[m].assign(side=df["dir"].values[m], tier_n=df.setup.values[m].astype(int))
+    c = c.sort_values(["tier_n", "chk", "opp", "ticker"], ascending=[False, False, False, True])
+    sec = c["sector"] if "sector" in c.columns else c["ticker"]
+    counts, out = {}, []
+    for idx, s, t in zip(c.index, sec, c["ticker"]):
+        s = t if (not isinstance(s, str) or s in ("", "Unknown")) else s     # unknown sector = its own group
+        if counts.get(s, 0) >= MAX_PER_SECTOR:
+            continue
+        counts[s] = counts.get(s, 0) + 1
+        out.append(idx)
+        if len(out) == TOP_N:
+            break
+    return c.loc[out]
+
+
 def _pick(df, v, day):
+    if v.get("select") == "dashboard":
+        return _pick_dashboard(df, v)
     m = _mask(df, v) & df.entry.notna().values
     if not m.any():
         return df.iloc[0:0].assign(side=[])
@@ -87,7 +111,7 @@ def _simulate(g, pos, d, rule, atr):
                 mfe_atr=fav * 100 / atr, mae_atr=adv * 100 / atr, bars_held=ex_idx - pos), path
 
 
-def run_day(day_df, day, kind):
+def run_day(day_df, day, kind, only=None):
     """All variants' hypothetical trades for one trading day."""
     df = day_df.sort_values(["ticker", "end"]).reset_index(drop=True)
     tick = {}
@@ -98,6 +122,8 @@ def run_day(day_df, day, kind):
             pos={ts: i for i, ts in enumerate(g.end)})
     rows = []
     for v in VARIANTS:
+        if only is not None and v["name"] not in only:
+            continue
         for idx, r in _pick(df, v, day).iterrows():
             g = tick[r.ticker]
             pos = g.pos[r.end]
