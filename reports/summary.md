@@ -1,6 +1,6 @@
 # Strategy tester summary
 
-Updated through **2026-11-12** | 25 trading days | 2,664 hypothetical trades | 23 variants
+Updated through **2026-11-12** | 37 trading days | 4,039 hypothetical trades | 23 variants
 
 `avg_atr` is the average move in your direction, measured in daily-ATR units (the stock's move, not option P&L). `vs_control` subtracts the random 1H-ribbon control. `p_luck` is the chance noise alone matches the result, counted over days. Win-rate range = 95% interval.
 
@@ -12,54 +12,54 @@ With 22 variants compared, a few will look good by chance. Trust a variant only 
 
 | variant | n | days | win_pct | win_lo | win_hi | avg_atr | vs_control | payoff | bars_held | p_luck | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| control_random | 125 | 25 | 47.20 | 38.66 | 55.90 | -0.02 | 0.00 | 0.92 | 8.00 | 0.74 | control |
+| control_random | 185 | 37 | 47.03 | 39.97 | 54.21 | -0.03 | 0.00 | 0.91 | 8.00 | 0.82 | control |
 
 ### squeeze dot
 
 | variant | n | days | win_pct | win_lo | win_hi | avg_atr | vs_control | payoff | bars_held | p_luck | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| dot_fire_after_hot | 125 | 25 | 56.00 | 47.25 | 64.39 | 0.04 | 0.06 | 1.06 | 8.00 | 0.15 | beats control, could be luck |
-| dot_compressing_hot | 124 | 25 | 54.03 | 45.27 | 62.55 | 0.02 | 0.04 | 0.97 | 8.00 | 0.31 | beats control, could be luck |
-| dot_compressing_black | 125 | 25 | 52.00 | 43.31 | 60.57 | -0.01 | 0.01 | 0.83 | 8.00 | 0.66 | no edge |
-| dot_fire_after_black | 29 | 19 | 41.38 | 25.51 | 59.26 | -0.02 | 0.00 | 1.04 | 8.00 | 0.76 | too thin |
+| dot_compressing_hot | 184 | 37 | 53.26 | 46.06 | 60.33 | 0.02 | 0.05 | 1.05 | 8.00 | 0.18 | beats control, could be luck |
+| dot_fire_after_hot | 185 | 37 | 50.81 | 43.66 | 57.92 | 0.00 | 0.03 | 0.99 | 8.00 | 0.47 | beats control, could be luck |
+| dot_compressing_black | 185 | 37 | 46.49 | 39.44 | 53.67 | -0.01 | 0.01 | 1.01 | 8.00 | 0.71 | no edge |
+| dot_fire_after_black | 36 | 26 | 41.67 | 27.14 | 57.80 | -0.02 | 0.01 | 1.04 | 8.00 | 0.77 | no edge |
 
 ### exit rule
 
 | variant | n | days | win_pct | win_lo | win_hi | avg_atr | vs_control | payoff | bars_held | p_luck | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| exit_x8 | 125 | 25 | 51.20 | 42.53 | 59.80 | 0.00 | 0.03 | 0.98 | 8.00 | 0.47 | beats control, could be luck |
-| exit_x4 | 125 | 25 | 49.60 | 40.98 | 58.25 | 0.00 | 0.03 | 1.05 | 4.00 | 0.48 | beats control, could be luck |
-| exit_ribflip | 125 | 25 | 44.80 | 36.37 | 53.54 | 0.00 | 0.02 | 1.23 | 5.82 | 0.50 | beats control, could be luck |
-| exit_trail | 125 | 25 | 45.60 | 37.13 | 54.33 | -0.00 | 0.02 | 1.17 | 20.30 | 0.52 | no edge |
-| exit_momturn | 125 | 25 | 40.00 | 31.83 | 48.76 | -0.01 | 0.02 | 1.44 | 5.62 | 0.56 | no edge |
-| exit_tpsl | 125 | 25 | 41.60 | 33.34 | 50.37 | -0.02 | 0.01 | 1.27 | 14.02 | 0.64 | no edge |
-| exit_eod | 125 | 25 | 45.60 | 37.13 | 54.33 | -0.04 | -0.02 | 0.95 | 23.77 | 0.78 | no edge |
+| exit_x8 | 185 | 37 | 50.81 | 43.66 | 57.92 | 0.01 | 0.03 | 1.03 | 8.00 | 0.38 | beats control, could be luck |
+| exit_momturn | 185 | 37 | 42.70 | 35.79 | 49.91 | 0.00 | 0.03 | 1.37 | 5.96 | 0.46 | beats control, could be luck |
+| exit_x4 | 185 | 37 | 48.65 | 41.55 | 55.81 | 0.00 | 0.03 | 1.06 | 4.00 | 0.49 | beats control, could be luck |
+| exit_ribflip | 185 | 37 | 44.32 | 37.35 | 51.53 | -0.00 | 0.03 | 1.25 | 5.95 | 0.50 | no edge |
+| exit_trail | 185 | 37 | 46.49 | 39.44 | 53.67 | -0.00 | 0.02 | 1.14 | 20.32 | 0.52 | no edge |
+| exit_tpsl | 185 | 37 | 44.32 | 37.35 | 51.53 | -0.01 | 0.02 | 1.20 | 14.65 | 0.58 | no edge |
+| exit_eod | 185 | 37 | 47.57 | 40.49 | 54.74 | -0.01 | 0.01 | 1.02 | 23.88 | 0.63 | no edge |
 
 ### momentum bars
 
 | variant | n | days | win_pct | win_lo | win_hi | avg_atr | vs_control | payoff | bars_held | p_luck | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| mom_run_3plus | 125 | 25 | 57.60 | 48.84 | 65.91 | 0.06 | 0.08 | 1.21 | 8.00 | 0.03 | edge? (beats control, p<0.10) |
-| mom_run_1 | 116 | 25 | 52.59 | 43.56 | 61.44 | 0.00 | 0.03 | 0.92 | 8.00 | 0.40 | beats control, could be luck |
-| mom_run_2 | 121 | 25 | 50.41 | 41.63 | 59.17 | -0.01 | 0.01 | 0.88 | 8.00 | 0.64 | no edge |
+| mom_run_3plus | 185 | 37 | 54.59 | 47.40 | 61.60 | 0.05 | 0.08 | 1.27 | 8.00 | 0.04 | edge? (beats control, p<0.10) |
+| mom_run_1 | 176 | 37 | 52.27 | 44.92 | 59.52 | 0.00 | 0.03 | 0.91 | 8.00 | 0.45 | beats control, could be luck |
+| mom_run_2 | 181 | 37 | 49.17 | 41.98 | 56.40 | -0.02 | 0.00 | 0.87 | 8.00 | 0.75 | no edge |
 
 ### opp score
 
 | variant | n | days | win_pct | win_lo | win_hi | avg_atr | vs_control | payoff | bars_held | p_luck | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| score_92 | 58 | 17 | 62.07 | 49.20 | 73.44 | 0.07 | 0.10 | 1.21 | 8.00 | 0.21 | beats control, could be luck |
-| score_85 | 96 | 20 | 57.29 | 47.30 | 66.72 | 0.03 | 0.05 | 0.95 | 8.00 | 0.36 | beats control, could be luck |
-| score_setup_70 | 125 | 25 | 51.20 | 42.53 | 59.80 | 0.00 | 0.03 | 0.98 | 8.00 | 0.47 | beats control, could be luck |
-| score_70 | 125 | 25 | 51.20 | 42.53 | 59.80 | -0.00 | 0.02 | 0.94 | 8.00 | 0.53 | no edge |
+| score_92 | 133 | 35 | 58.65 | 50.15 | 66.66 | 0.05 | 0.08 | 1.23 | 8.00 | 0.04 | edge? (beats control, p<0.10) |
+| score_85 | 185 | 37 | 55.68 | 48.47 | 62.65 | 0.03 | 0.06 | 1.05 | 8.00 | 0.12 | beats control, could be luck |
+| score_setup_70 | 185 | 37 | 50.81 | 43.66 | 57.92 | 0.01 | 0.03 | 1.03 | 8.00 | 0.38 | beats control, could be luck |
+| score_70 | 185 | 37 | 50.81 | 43.66 | 57.92 | 0.01 | 0.03 | 1.02 | 8.00 | 0.41 | beats control, could be luck |
 
 ### time of day
 
 | variant | n | days | win_pct | win_lo | win_hi | avg_atr | vs_control | payoff | bars_held | p_luck | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| time_0945-1030 | 125 | 25 | 48.80 | 40.20 | 57.47 | 0.02 | 0.05 | 1.21 | 8.00 | 0.33 | beats control, could be luck |
-| time_1030-1130 | 125 | 25 | 56.00 | 47.25 | 64.39 | 0.02 | 0.04 | 0.94 | 8.00 | 0.29 | beats control, could be luck |
-| time_1300-1500 | 121 | 25 | 51.24 | 42.43 | 59.97 | 0.02 | 0.04 | 1.22 | 7.83 | 0.15 | beats control, could be luck |
-| time_1130-1300 | 124 | 25 | 50.81 | 42.12 | 59.45 | 0.00 | 0.03 | 1.01 | 8.00 | 0.43 | beats control, could be luck |
+| time_1300-1500 | 184 | 37 | 49.46 | 42.32 | 56.62 | 0.01 | 0.04 | 1.27 | 7.90 | 0.19 | beats control, could be luck |
+| time_1130-1300 | 185 | 37 | 49.73 | 42.60 | 56.87 | 0.01 | 0.04 | 1.18 | 8.00 | 0.31 | beats control, could be luck |
+| time_1030-1130 | 185 | 37 | 52.97 | 45.79 | 60.03 | 0.01 | 0.03 | 0.96 | 8.00 | 0.37 | beats control, could be luck |
+| time_0945-1030 | 185 | 37 | 46.49 | 39.44 | 53.67 | 0.00 | 0.03 | 1.18 | 8.00 | 0.46 | beats control, could be luck |
 
 ## Where does the move peak? (entries with opp >= 70 and a setup)
 
@@ -67,5 +67,5 @@ Average move in ATR units at +N bars after entry (15m bars) and the percent of t
 
 | kind | n | +1 | +2 | +3 | +4 | +5 | +6 | +7 | +8 | +9 | +10 | +11 | +12 | +13 | +14 | +15 | +16 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| replay | 125 | 0.01 | 0.01 | -0.01 | 0.00 | 0.01 | 0.01 | 0.01 | 0.00 | -0.01 | -0.00 | -0.00 | -0.01 | -0.01 | -0.01 | -0.01 | -0.02 |
-| replay % up | 125 | 50.40 | 52.00 | 44.00 | 49.60 | 48.00 | 50.40 | 53.60 | 51.20 | 50.40 | 47.20 | 46.40 | 46.40 | 47.20 | 45.60 | 47.20 | 46.40 |
+| replay | 185 | 0.01 | 0.00 | -0.01 | 0.00 | 0.01 | 0.01 | 0.01 | 0.01 | 0.01 | -0.00 | 0.00 | 0.01 | 0.00 | 0.01 | 0.01 | 0.01 |
+| replay % up | 185 | 49.19 | 48.65 | 45.95 | 48.65 | 51.89 | 51.35 | 52.43 | 50.27 | 51.35 | 45.95 | 45.95 | 49.19 | 48.65 | 47.03 | 48.11 | 47.57 |
