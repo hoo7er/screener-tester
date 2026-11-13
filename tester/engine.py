@@ -131,7 +131,8 @@ def run_day(day_df, day, kind, only=None):
                 continue
             side = int(r.side)
             res, path = _simulate(g, pos, side, v["exit"], r.atr)
-            rows.append(dict(date=day, kind=kind, variant=v["name"], group=v["group"], ticker=r.ticker,
+            vkind = kind if (not v.get("since") or str(day) >= v["since"]) else "replay"
+            rows.append(dict(date=day, kind=vkind, variant=v["name"], group=v["group"], ticker=r.ticker,
                              side="CALL" if side == 1 else "PUT", decision_end=r.end,
                              entry=g.open_[pos + 1], atr_pct=r.atr, opp=round(r.opp, 1), setup=bool(r.setup),
                              sq=r.sq, fired=r.fired, tight=r.tight, run_dir=r.run_dir, rib_1h=r.rib_1h,

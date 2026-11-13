@@ -47,9 +47,11 @@ def _rib_dir(df):
 VARIANTS = []
 
 
-def add(name, group, mask, window=SCAN, exit="x8", dirfn=None, rand=False, select=None):
+def add(name, group, mask, window=SCAN, exit="x8", dirfn=None, rand=False, select=None, since=None):
+    """since = first trading day (YYYY-MM-DD) that counts as forward for this tester; earlier days are labelled replay
+    (use it for testers added after a day's entries were already decided)."""
     VARIANTS.append(dict(name=name, group=group, mask=mask, window=window, exit=exit, dirfn=dirfn, rand=rand,
-                         select=select))
+                         select=select, since=since))
 
 
 # 1) Best time of day to enter (bar-close time, ET)
@@ -80,7 +82,7 @@ for ex in ["x4", "x8", "eod", "trail", "tpsl", "momturn", "ribflip"]:
 # 6) The screener dashboard's own top-5 rule, taken once at the start of the scan window
 #    (decision at the 10:00 ET close = 7:00 AM PT): setups first, then checklist score, then opp score,
 #    at most 2 names per sector. Same 2-hour exit and gap skip as the other testers.
-add("screener_top5", "screener rule", _all, window=(600, 600), select="dashboard")
+add("screener_top5", "screener rule", _all, window=(600, 600), select="dashboard", since="2026-11-16")
 
 # Control: random picks in the direction of the 1H ribbon only. Everything should beat this.
 add("control_random", "control", _all, dirfn=_rib_dir, rand=True)
