@@ -7,6 +7,7 @@ from .core import FIRE_WINDOW, MIN_TIGHT_BARS
 
 SCAN = (600, 780)          # default entry window: 10:00-13:00 ET (07:00-10:00 PT)
 MAX_PER_DAY = 5            # max hypothetical entries per variant per day (one per ticker)
+TOP_N, MAX_PER_SECTOR = 5, 2   # the dashboard rule: top 5 names, at most 2 from one sector
 GAP_SKIP_ATR = 1.0         # skip tickers that opened with a gap larger than this many daily ATRs
 
 # exit rules (all in daily-ATR units, checked on 15m closes, filled at the next bar's open)
@@ -46,8 +47,11 @@ def _rib_dir(df):
 VARIANTS = []
 
 
-def add(name, group, mask, window=SCAN, exit="x8", dirfn=None, rand=False):
-    VARIANTS.append(dict(name=name, group=group, mask=mask, window=window, exit=exit, dirfn=dirfn, rand=rand))
+def add(name, group, mask, window=SCAN, exit="x8", dirfn=None, rand=False, select=None, since=None):
+    """since = first trading day (YYYY-MM-DD) that counts as forward for this tester; earlier days are labelled replay
+    (use it for testers added after a day's entries were already decided)."""
+    VARIANTS.append(dict(name=name, group=group, mask=mask, window=window, exit=exit, dirfn=dirfn, rand=rand,
+                         select=select, since=since))
 
 
 # 1) Best time of day to enter (bar-close time, ET)
@@ -74,6 +78,11 @@ add("score_setup_70", "opp score", base_ok)
 # 5) Exit rules on the same entries (setup + opp >= 70)
 for ex in ["x4", "x8", "eod", "trail", "tpsl", "momturn", "ribflip"]:
     add(f"exit_{ex}", "exit rule", base_ok, exit=ex)
+
+# 6) The screener dashboard's own top-5 rule, taken once at the start of the scan window
+#    (decision at the 10:00 ET close = 7:00 AM PT): setups first, then checklist score, then opp score,
+#    at most 2 names per sector. Same 2-hour exit and gap skip as the other testers.
+add("screener_top5", "screener rule", _all, window=(600, 600), select="dashboard", since="2026-11-16")
 
 # Control: random picks in the direction of the 1H ribbon only. Everything should beat this.
 add("control_random", "control", _all, dirfn=_rib_dir, rand=True)

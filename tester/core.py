@@ -232,6 +232,7 @@ def score_panel(df, atr_rank):
     df["dir"] = np.where(call, 1, np.where(put, -1, np.where(df.rib_1h == "lime", 1, -1)))
     chk = np.where(df["dir"] == 1, c, p)
     df["agree5"] = chk - fr                                # the five non-squeeze checks in the trade direction
+    df["chk"] = chk                                        # full checklist score (0-6) in the trade direction
     comp = df.sq.map({"orange": 25, "red": 20, "black": 10}).fillna(0).values
     real = df.fired.notna() & (df.tight >= mt)
     fire = np.where(~real, 0, np.where(df.fired <= fw // 2, 25, np.where(df.fired <= fw, 20,
